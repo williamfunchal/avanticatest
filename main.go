@@ -51,7 +51,6 @@ func Validate(input string) string {
 
 			if selectCounter > 0 {
 				control = false
-				selectCounter++
 				selected = inputArr[i]
 			}
 		}
