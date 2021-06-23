@@ -5,6 +5,27 @@ import (
 	"strings"
 )
 
+type Stack []string
+
+func (s *Stack) IsEmpty() bool {
+	return len(*s) == 0
+}
+
+func (s *Stack) Push(str string) {
+	*s = append(*s, str)
+}
+
+func (s *Stack) Pop() (string, bool) {
+	if s.IsEmpty() {
+		return "", false
+	} else {
+		index := len(*s) - 1
+		element := (*s)[index]
+		*s = (*s)[:index]
+		return element, true
+	}
+}
+
 /*
 * Escribir un código que permita validar si un string tiene correctamente balanceados los paréntesis.
 * Ejemplo: "(()(()))" -> Valid
@@ -26,62 +47,34 @@ func main() {
 
 func Validate(input string) string {
 	//Write your code here
+
+	var s Stack
+
 	inputArr := strings.Split(input, "")
-	selected := ""
-	selectCounter := 0
-	control := false
 
 	for i := 0; i < len(inputArr); i++ {
-		if control {
-			if selectCounter > 0 && selected == inputArr[i] {
-				selectCounter--
-				continue
-			}
-
-			if selectCounter == 0 {
-				if inputArr[i] == ")" {
-					return "Invalid"
-				}
-
-				control = false
-				selected = inputArr[i]
-				selectCounter++
-				continue
-			}
-
-			if selectCounter > 0 {
-				control = false
-				selected = inputArr[i]
-			}
-		}
-
-		if i == 0 {
-			if inputArr[i] == ")" {
+		if inputArr[i] == "(" {
+			s.Push(inputArr[i])
+		} else {
+			if s.IsEmpty() {
 				return "Invalid"
 			}
 
-			selected = inputArr[i]
-			selectCounter++
-			continue
-		}
+			b, status := s.Pop()
 
-		if i > 0 && selected == inputArr[i] {
-			selectCounter++
-			continue
-		}
+			if status {
+				if b == "(" && inputArr[i] == ")" {
+					continue
+				}
+			}
 
-		if i > 0 && selected != inputArr[i] {
-			selectCounter--
-			selected = inputArr[i]
-			control = true
-			continue
+			return "Invalid"
 		}
 	}
 
-	if selectCounter != 0 {
-		return "Invalid"
+	if s.IsEmpty() {
+		return "Valid"
 	}
 
-	return "Valid"
-
+	return "Invalid"
 }
